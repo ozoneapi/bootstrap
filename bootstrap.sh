@@ -65,6 +65,7 @@ if [[ ! -d /home/ssm-user ]]; then
   mkdir -p /home/ssm-user
 fi  
 
-mv /root/.gitconfig /root/.git-credentials /home/ssm-user
+mv /root/.gitconfig /home/ssm-user
+mv /root/.git-credentials /home/ssm-user
 chown -R ssm-user:ssm-user /home/ssm-user
 chown -R ssm-user:ssm-user /usr/o3 /home/ssm-user
