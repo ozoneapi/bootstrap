@@ -9,15 +9,15 @@ fi
 echo " - running as user ${USER}. Check successful."
 echo " - Assuming user has \"sudo\" permissions with no need for password"
 
-if [[ -f ~/.git-credentials ]]; then
-  HAVE_CREDS=$(cat ~/.git-credentials | grep -v bitbucket.org/ozoneapi | wc -l)
+if [[ -f /root/.git-credentials ]]; then
+  HAVE_CREDS=$(cat /root/.git-credentials | grep -v bitbucket.org/ozoneapi | wc -l)
 fi
 
 if [[ ! -z $HAVE_CREDS && $HAVE_CREDS != 0 ]]; then
   echo "git https creds configured."
 elif [[ -v GIT_HTTPS_CREDS ]]; then
   echo "persisting git https creds"
-  echo "https://$GIT_HTTPS_CREDS@bitbucket.org/ozoneapi" >> ~/.git-credentials
+  echo "https://$GIT_HTTPS_CREDS@bitbucket.org/ozoneapi" >> /root/.git-credentials
 else
   echo "Export the git https credentials before running this script. Run:"
   echo "export GIT_HTTPS_CREDS=<username:app-password>"
@@ -38,7 +38,7 @@ else
   exit -1
 fi
 
-if [[ ! -f ~/.gitconfig ]]; then
+if [[ ! -f /root/.gitconfig ]]; then
   git config --global credential.helper store
 fi
 
@@ -65,6 +65,6 @@ if [[ ! -d /home/ssm-user ]]; then
   mkdir -p /home/ssm-user
 fi  
 
-mv ~/.gitconfig ~/.git-credentials /home/ssm-user
+mv /root/.gitconfig /root/.git-credentials /home/ssm-user
 chown -R ssm-user:ssm-user /home/ssm-user
 chown -R ssm-user:ssm-user /usr/o3 /home/ssm-user
