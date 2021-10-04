@@ -71,7 +71,7 @@ if [[ -d ${GEPPETTO_HOME} ]]; then
 fi
 
 echo "- Creating ${GEPPETTO_HOME}"
-mkdir -p ${GEPPETTO_HOME}
+sudo mkdir -p ${GEPPETTO_HOME}
 
 # assign right permissions
 echo "- Assign user permissions to ${OZONE_HOME}"
