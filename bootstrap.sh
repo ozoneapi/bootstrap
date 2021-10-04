@@ -70,12 +70,12 @@ if [[ -d ${GEPPETTO_HOME} ]]; then
   sudo rm -rf ${GEPPETTO_HOME}
 fi
 
+echo "- Creating ${GEPPETTO_HOME}"
+mkdir -p ${GEPPETTO_HOME}
+
 # assign right permissions
 echo "- Assign user permissions to ${OZONE_HOME}"
 sudo chown -R ${USER}:${USER} ${OZONE_HOME}
-
-echo "- Creating ${GEPPETTO_HOME}"
-mkdir -p ${GEPPETTO_HOME}
 
 if [[ -v BRANCH ]]; then
   BRANCH_OPTS="--branch=${BRANCH}"
