@@ -38,7 +38,7 @@ fi
 if [[ `git config --global credential.helper` != 'store' ]]; then 
   echo "Credential helper is not 'store'. Skip git-credential configuration and check."
 else
-  echo 'Credential helper is "store". Validating ~/.git-credentials file.'
+  echo "Credential helper is 'store'. Validating ${HOME}/.git-credentials file."
 
   # Configure the credentials if they are not already done
   unset -v HAVE_CREDS
@@ -50,14 +50,15 @@ else
   if [[ ! -z ${HAVE_CREDS} && ${HAVE_CREDS} != 0 ]]; then
     echo "git https creds configured."
   else 
+    echo "git https creds not already configured. Fetch from 'GIT_HTTPS_CREDS'"
     # if credentials not configured, use defaults
-    if [[ ! -v GIT_HTTPS_CREDS ]]; then
+    if [[ -z ${GIT_HTTPS_CREDS} ]]; then
       echo "Export the git https credentials before running this script. Run:"
       echo "export GIT_HTTPS_CREDS=<username:app-password>"
       exit -1
     fi
     echo "persisting git https creds"
-    echo "https://$GIT_HTTPS_CREDS@bitbucket.org/ozoneapi" >> ${GIT_CRED_FILE}
+    echo "https://${GIT_HTTPS_CREDS}@bitbucket.org/ozoneapi" >> ${GIT_CRED_FILE}
   fi
 fi
 
