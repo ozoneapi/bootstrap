@@ -1,19 +1,13 @@
 #/usr/bin/env bash
 echo "Bootstrapping Geppetto"
 USER=`whoami`
-if [[ -v SKIP_SSM_USER ]]; then
-  if [[ ${USER} = "root" ]]; then
-    echo "This script needs to be run as a non-\"root\". Ensure correct setup."
-    exit -1
-  fi
-else 
-  if [[ ${USER} != "ssm-user" ]]; then
-    echo "This script needs to be run as \"ssm-user\". Ensure correct setup."
-    exit -1
-  fi
+
+if [[ ${USER} != "ssm-user" ]]; then
+  echo "This script needs to be run as \"ssm-user\". Ensure correct setup."
+  exit -1
 fi
 
-echo " - running as user ${USER}. Check successful."
+echo " - running as user ${USER}, with home as ${HOME}. Check successful."
 echo " - Assuming user has \"sudo\" permissions with no need for password"
 
 # ensure git is installed
@@ -48,8 +42,9 @@ else
 
   # Configure the credentials if they are not already done
   unset -v HAVE_CREDS
-  if [[ -f ~/.git-credentials ]]; then
-    HAVE_CREDS=$(cat ~/.git-credentials | grep -v bitbucket.org/ozoneapi | wc -l)
+  GIT_CRED_FILE="${HOME}/.git-credentials"
+  if [[ -f ${GIT_CRED_FILE} ]]; then
+    HAVE_CREDS=$(cat ${GIT_CRED_FILE} | grep -v bitbucket.org/ozoneapi | wc -l)
   fi
 
   if [[ ! -z ${HAVE_CREDS} && ${HAVE_CREDS} != 0 ]]; then
@@ -62,7 +57,7 @@ else
       exit -1
     fi
     echo "persisting git https creds"
-    echo "https://$GIT_HTTPS_CREDS@bitbucket.org/ozoneapi" >> ~/.git-credentials
+    echo "https://$GIT_HTTPS_CREDS@bitbucket.org/ozoneapi" >> ${GIT_CRED_FILE}
   fi
 fi
 
@@ -74,12 +69,12 @@ if [[ -d ${GEPPETTO_HOME} ]]; then
   sudo rm -rf ${GEPPETTO_HOME}
 fi
 
-echo "- Creating ${GEPPETTO_HOME}"
-sudo mkdir -p ${GEPPETTO_HOME}
-
 # assign right permissions
 echo "- Assign user permissions to ${OZONE_HOME}"
 sudo chown -R ${USER}:${USER} ${OZONE_HOME}
+
+echo "- Creating ${GEPPETTO_HOME}"
+mkdir -p ${GEPPETTO_HOME}
 
 if [[ -v BRANCH ]]; then
   BRANCH_OPTS="--branch=${BRANCH}"
