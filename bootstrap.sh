@@ -25,7 +25,6 @@ function create_ssm_user {
 
 #/usr/bin/env bash
 echo "Bootstrapping Geppetto"
-USER=`whoami`
 
 # ensure git is installed
 if [[ ! -f /usr/bin/git ]]; then
@@ -56,7 +55,7 @@ sudo mkdir -p ${GEPPETTO_HOME}
 
 # assign right permissions
 echo "- Assign user permissions to ${OZONE_HOME}"
-sudo chown -R ${USER}:${USER} ${OZONE_HOME}
+sudo chown -R ssm-user:ssm-user ${OZONE_HOME}
 
 CWD=$(dirname $0)
 
