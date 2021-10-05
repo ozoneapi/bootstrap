@@ -57,7 +57,7 @@ sudo mkdir -p ${GEPPETTO_HOME}
 echo "- Assign user permissions to ${OZONE_HOME}"
 sudo chown -R ssm-user:ssm-user ${OZONE_HOME}
 
-CWD=$(dirname $0)
+CWD=$(realpath `dirname $0`)
 
 echo "- run the ssm-user bootstrap script"
 sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} BRANCH=${BRANCH} ${CWD}/ssm-bootstrap.sh
