@@ -1,19 +1,36 @@
+function create_ssm_user {
+  # check if user already exists
+  getent passwd ssm-user > /dev/null
+  if [[ $? = 0 ]]; then
+    echo "ssm-user user already exists. Don't need to do anything more."
+  else
+    # ssm-user creation
+    useradd --comment "mirror AWS System Manager ssm-user" --create-home --shell /bin/bash ssm-user
+    if [[ $? != 0 ]]; then
+      >&2 echo "Error while creating user."
+      exit -1
+    fi
+    usermod -a -G wheel ssm-user
+    if [[ $? != 0 ]]; then
+      >&2 echo "Error while updating user permissions."
+      exit -1
+    fi
+    echo "ssm-user ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/dont-prompt-ssm-user-for-sudo-password
+    if [[ $? != 0 ]]; then
+      >&2 echo "Error while updating user sudo password policy."
+      exit -1
+    fi
+  fi
+}
+
 #/usr/bin/env bash
 echo "Bootstrapping Geppetto"
 USER=`whoami`
 
-if [[ ${USER} != "ssm-user" ]]; then
-  echo "This script needs to be run as \"ssm-user\". Ensure correct setup."
-  exit -1
-fi
-
-echo " - running as user ${USER}, with home as ${HOME}. Check successful."
-echo " - Assuming user has \"sudo\" permissions with no need for password"
-
 # ensure git is installed
 if [[ ! -f /usr/bin/git ]]; then
   echo "- git is not installed on this system. Installing git..."
-  sudo yum install -y git-core
+  yum install -y git-core
   # check for status again
   if [[ -f /usr/bin/git ]]; then
     echo "- git install check successful."
@@ -23,44 +40,8 @@ if [[ ! -f /usr/bin/git ]]; then
   fi
 fi
 
-# ensure git credential helper is configured to be the "store"
-if [[ `git config --global credential.helper | wc -l` = 0 ]]; then
-  echo "Credential Helper not configured. Configuring 'store'"
-  git config --global credential.helper store
-
-  # cross check the store has been configured, otherwise fail
-  if [[ `git config --global credential.helper | wc -l` = 0 ]]; then
-    >&2 echo "git store configuration failed. Cannot proceed."
-    exit -1
-  fi
-fi
-
-if [[ `git config --global credential.helper` != 'store' ]]; then 
-  echo "Credential helper is not 'store'. Skip git-credential configuration and check."
-else
-  echo "Credential helper is 'store'. Validating ${HOME}/.git-credentials file."
-
-  # Configure the credentials if they are not already done
-  unset -v HAVE_CREDS
-  GIT_CRED_FILE="${HOME}/.git-credentials"
-  if [[ -f ${GIT_CRED_FILE} ]]; then
-    HAVE_CREDS=$(cat ${GIT_CRED_FILE} | grep -v bitbucket.org/ozoneapi | wc -l)
-  fi
-
-  if [[ ! -z ${HAVE_CREDS} && ${HAVE_CREDS} != 0 ]]; then
-    echo "git https creds configured."
-  else 
-    echo "git https creds not already configured. Fetch from 'GIT_HTTPS_CREDS'"
-    # if credentials not configured, use defaults
-    if [[ -z ${GIT_HTTPS_CREDS} ]]; then
-      echo "Export the git https credentials before running this script. Run:"
-      echo "export GIT_HTTPS_CREDS=<username:app-password>"
-      exit -1
-    fi
-    echo "persisting git https creds"
-    echo "https://${GIT_HTTPS_CREDS}@bitbucket.org/ozoneapi" >> ${GIT_CRED_FILE}
-  fi
-fi
+# create the ssm user
+create_ssm_user
 
 OZONE_HOME="/usr/o3"
 GEPPETTO_HOME=${OZONE_HOME}/geppetto
@@ -77,9 +58,7 @@ sudo mkdir -p ${GEPPETTO_HOME}
 echo "- Assign user permissions to ${OZONE_HOME}"
 sudo chown -R ${USER}:${USER} ${OZONE_HOME}
 
-if [[ -v BRANCH ]]; then
-  BRANCH_OPTS="--branch=${BRANCH}"
-fi
+CWD=$(dirname $0)
 
-echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
-git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto ${GEPPETTO_HOME}
+echo "- run the ssm-user bootstrap script"
+sudo -iu ssm-user ${CWD}/ssm-bootstrap.sh
