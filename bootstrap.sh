@@ -61,4 +61,9 @@ sudo chown -R ${USER}:${USER} ${OZONE_HOME}
 CWD=$(dirname $0)
 
 echo "- run the ssm-user bootstrap script"
-sudo -iu ssm-user ${CWD}/ssm-bootstrap.sh
+sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} BRANCH=${BRANCH} ${CWD}/ssm-bootstrap.sh
+
+if [[ $? != 0 ]]; then
+  >&2 echo "Bootstrap initialization failed."
+  exit -1
+fi

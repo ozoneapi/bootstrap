@@ -1,3 +1,10 @@
+USER=`whoami`
+
+if [[ $USER != 'ssm-user' ]]; then
+  >&2 echo "Not running as ssm-user. Cannot proceed."
+  exit -1
+fi
+
 # ensure git credential helper is configured to be the "store"
 if [[ `git config --global credential.helper | wc -l` = 0 ]]; then
   echo "Credential Helper not configured. Configuring 'store'"
@@ -39,18 +46,6 @@ fi
 
 OZONE_HOME="/usr/o3"
 GEPPETTO_HOME=${OZONE_HOME}/geppetto
-
-if [[ -d ${GEPPETTO_HOME} ]]; then
-  echo "- Cleaning old ${GEPPETTO_HOME}"
-  sudo rm -rf ${GEPPETTO_HOME}
-fi
-
-echo "- Creating ${GEPPETTO_HOME}"
-sudo mkdir -p ${GEPPETTO_HOME}
-
-# assign right permissions
-echo "- Assign user permissions to ${OZONE_HOME}"
-sudo chown -R ${USER}:${USER} ${OZONE_HOME}
 
 if [[ -v BRANCH ]]; then
   BRANCH_OPTS="--branch=${BRANCH}"
