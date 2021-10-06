@@ -52,4 +52,10 @@ if [[ -v BRANCH ]]; then
 fi
 
 echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
-git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto ${GEPPETTO_HOME}
+git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+
+if [[ $? != 0 && $BRANCH != 'develop' ]]; then
+  echo "- Clone failed on branch ${BRANCH}. Trying 'develop'."
+  BRANCH_OPTS="--branch=develop"
+  git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+fi
