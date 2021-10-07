@@ -26,7 +26,7 @@ else
   unset -v HAVE_CREDS
   GIT_CRED_FILE="${HOME}/.git-credentials"
   if [[ -f ${GIT_CRED_FILE} ]]; then
-    HAVE_CREDS=$(cat ${GIT_CRED_FILE} | grep -v bitbucket.org/ozoneapi | wc -l)
+    HAVE_CREDS=$(cat ${GIT_CRED_FILE} | grep -v bitbucket.org | wc -l)
   fi
 
   if [[ ! -z ${HAVE_CREDS} && ${HAVE_CREDS} != 0 ]]; then
@@ -40,7 +40,7 @@ else
       exit -1
     fi
     echo "persisting git https creds"
-    echo "https://${GIT_HTTPS_CREDS}@bitbucket.org/ozoneapi" >> ${GIT_CRED_FILE}
+    echo "https://${GIT_HTTPS_CREDS}@bitbucket.org" >> ${GIT_CRED_FILE}
   fi
 fi
 
@@ -49,6 +49,11 @@ GEPPETTO_HOME=${OZONE_HOME}/geppetto
 
 if [[ -v BRANCH ]]; then
   BRANCH_OPTS="--branch=${BRANCH}"
+fi
+
+if [[ -d ${GEPPETTO_HOME} ]]; then
+  echo "Cleaning up existing geppetto."
+  rm -rf ${GEPPETTO_HOME}
 fi
 
 echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
