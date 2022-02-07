@@ -64,3 +64,11 @@ if [[ $? != 0 && $BRANCH != 'develop' ]]; then
   BRANCH_OPTS="--branch=develop"
   git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 fi
+
+if [[ "${AUTODEPLOY,,}" == "true" ]]; then
+  echo "Autodeploy requested."
+  ${GEPPETTO_HOME}/scripts/install-ozone-stage1.sh
+  ${GEPPETTO_HOME}/scripts/install-ozone-stage3.sh
+else
+  echo "Not running autodeploy."
+fi
