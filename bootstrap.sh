@@ -49,9 +49,10 @@ echo "- Assign user permissions to ${OZONE_HOME}"
 sudo chown -R ssm-user:ssm-user ${OZONE_HOME}
 
 CWD=$(dirname $0)
+REAL_DIR=$(realpath ${CWD})
 
-echo "- run the ssm-user bootstrap script"
-sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} BRANCH=${BRANCH} AUTODEPLOY=${AUTODEPLOY:-"false"} ${CWD}/ssm-bootstrap.sh
+echo "- run the ssm-user bootstrap script in ${REAL_DIR}"
+sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} BRANCH=${BRANCH} AUTODEPLOY=${AUTODEPLOY:-"false"} ${REAL_DIR}/ssm-bootstrap.sh
 
 if [[ $? != 0 ]]; then
   >&2 echo "Bootstrap initialization failed."
