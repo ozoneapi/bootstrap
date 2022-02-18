@@ -27,17 +27,8 @@ function create_ssm_user {
 echo "Bootstrapping Geppetto"
 
 # ensure git is installed
-if [[ ! -f /usr/bin/git ]]; then
-  echo "- git is not installed on this system. Installing git..."
-  yum install -y git sudo shadow-utils
-  # check for status again
-  if [[ -f /usr/bin/git ]]; then
-    echo "- git install check successful."
-  else
-    echo "- git install check failed. Ensure it is installed correctly."
-    exit -1
-  fi
-fi
+echo "- Installing bootstrapping tools"
+yum install -y git sudo shadow-utils
 
 # create the ssm user
 create_ssm_user
