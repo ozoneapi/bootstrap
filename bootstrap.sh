@@ -29,7 +29,7 @@ echo "Bootstrapping Geppetto"
 # ensure git is installed
 if [[ ! -f /usr/bin/git ]]; then
   echo "- git is not installed on this system. Installing git..."
-  yum install -y git-core
+  yum install -y git sudo
   # check for status again
   if [[ -f /usr/bin/git ]]; then
     echo "- git install check successful."
