@@ -17,7 +17,7 @@ if [[ `git config --global credential.helper | wc -l` = 0 ]]; then
   fi
 fi
 
-if [[ `git config --global credential.helper` != 'store' ]]; then 
+if [[ `git config --global credential.helper` != 'store' ]]; then
   echo "Credential helper is not 'store'. Skip git-credential configuration and check."
 else
   echo "Credential helper is 'store'. Validating ${HOME}/.git-credentials file."
@@ -31,7 +31,7 @@ else
 
   if [[ ! -z ${HAVE_CREDS} && ${HAVE_CREDS} != 0 ]]; then
     echo "git https creds configured."
-  else 
+  else
     echo "git https creds not already configured. Fetch from 'GIT_HTTPS_CREDS'"
     # if credentials not configured, use defaults
     if [[ -z ${GIT_HTTPS_CREDS} ]]; then
@@ -67,7 +67,7 @@ fi
 
 if [[ "${AUTODEPLOY,,}" == "true" ]]; then
   echo "Autodeploy requested."
-  ${GEPPETTO_HOME}/scripts/install-ozone-stage1.sh
+  sudo ${GEPPETTO_HOME}/scripts/install-ozone-stage1.sh
   ${GEPPETTO_HOME}/scripts/install-ozone-stage3.sh
 else
   echo "Not running autodeploy."

@@ -27,17 +27,8 @@ function create_ssm_user {
 echo "Bootstrapping Geppetto"
 
 # ensure git is installed
-if [[ ! -f /usr/bin/git ]]; then
-  echo "- git is not installed on this system. Installing git..."
-  yum install -y git-core
-  # check for status again
-  if [[ -f /usr/bin/git ]]; then
-    echo "- git install check successful."
-  else
-    echo "- git install check failed. Ensure it is installed correctly."
-    exit -1
-  fi
-fi
+echo "- Installing bootstrapping tools"
+yum install -y git sudo shadow-utils
 
 # create the ssm user
 create_ssm_user
@@ -58,9 +49,10 @@ echo "- Assign user permissions to ${OZONE_HOME}"
 sudo chown -R ssm-user:ssm-user ${OZONE_HOME}
 
 CWD=$(dirname $0)
+REAL_DIR=$(realpath ${CWD})
 
-echo "- run the ssm-user bootstrap script"
-sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} BRANCH=${BRANCH} AUTODEPLOY=${AUTODEPLOY:-"false"} ${CWD}/ssm-bootstrap.sh
+echo "- run the ssm-user bootstrap script in ${REAL_DIR}"
+sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} BRANCH=${BRANCH} AUTODEPLOY=${AUTODEPLOY:-"false"} ${REAL_DIR}/ssm-bootstrap.sh
 
 if [[ $? != 0 ]]; then
   >&2 echo "Bootstrap initialization failed."
