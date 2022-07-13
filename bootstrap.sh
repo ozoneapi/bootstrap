@@ -28,7 +28,7 @@ echo "Bootstrapping Geppetto"
 
 # ensure git is installed
 echo "- Installing bootstrapping tools"
-yum install -y git sudo shadow-utils
+yum install -y git-core sudo shadow-utils
 
 # create the ssm user
 create_ssm_user
