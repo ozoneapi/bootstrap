@@ -1,68 +1,71 @@
-USER=`whoami`
+#!/bin/bash
+
+USER=$(whoami)
 
 if [[ $USER != 'ssm-user' ]]; then
   >&2 echo "Not running as ssm-user. Cannot proceed."
-  exit -1
+  exit 1
+fi
+
+if [[ $(git config --global --get credential.helper) == 'store' ]]; then
+  echo "Found credential store to be 'store'. Remove that, use custom store instead"
+  git config --global --unset credential.helper
 fi
 
 # ensure git credential helper is configured to be the "store"
-if [[ `git config --global credential.helper | wc -l` = 0 ]]; then
-  echo "Credential Helper not configured. Configuring 'store'"
-  git config --global credential.helper store
+if [[ -z $(git config --get credential.https://bitbucket.org/ozoneapi.helper) ]]; then
+  echo "Credential Helper not configured. Configuring custom helper for 'https://bitbucket.org/ozoneapi'"
+  git config --global core.askPass false
+  git config --global credential.https://bitbucket.org.useHttpPath true
+  # use single quotes to stop variable expansion on the shell
+  # shellcheck disable=SC2016
+  git config --global credential.https://bitbucket.org/ozoneapi.helper '!f() { sleep 1; local GIT_USERNAME=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f1); local GIT_ACCESS_CRED=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f2); echo "username=${GIT_USERNAME}"; echo "password=${GIT_ACCESS_CRED}"; }; f'
 
   # cross check the store has been configured, otherwise fail
-  if [[ `git config --global credential.helper | wc -l` = 0 ]]; then
+  if [[ -z $(git config --global --get credential.https://bitbucket.org/ozoneapi.helper) ]]; then
     >&2 echo "git store configuration failed. Cannot proceed."
-    exit -1
-  fi
-fi
-
-if [[ `git config --global credential.helper` != 'store' ]]; then
-  echo "Credential helper is not 'store'. Skip git-credential configuration and check."
-else
-  echo "Credential helper is 'store'. Validating ${HOME}/.git-credentials file."
-
-  # Configure the credentials if they are not already done
-  unset -v HAVE_CREDS
-  GIT_CRED_FILE="${HOME}/.git-credentials"
-  if [[ -f ${GIT_CRED_FILE} ]]; then
-    HAVE_CREDS=$(cat ${GIT_CRED_FILE} | grep -v bitbucket.org | wc -l)
-  fi
-
-  if [[ ! -z ${HAVE_CREDS} && ${HAVE_CREDS} != 0 ]]; then
-    echo "git https creds configured."
-  else
-    echo "git https creds not already configured. Fetch from 'GIT_HTTPS_CREDS'"
-    # if credentials not configured, use defaults
-    if [[ -z ${GIT_HTTPS_CREDS} ]]; then
-      >&2 echo "Export the git https credentials before running this script. Run:"
-      >&2 echo "export GIT_HTTPS_CREDS=<username:app-password>"
-      exit -1
-    fi
-    echo "persisting git https creds"
-    echo "https://${GIT_HTTPS_CREDS}@bitbucket.org" >> ${GIT_CRED_FILE}
+    exit 1
   fi
 fi
 
 OZONE_HOME="/usr/o3"
 GEPPETTO_HOME=${OZONE_HOME}/geppetto
 
-if [[ -v BRANCH ]]; then
-  BRANCH_OPTS="--branch=${BRANCH}"
+if [[ -z ${GEPPETTO_BRANCH} ]]; then
+  >&2 echo "No GEPPETTO_BRANCH specified. Cannot proceed."
+  exit 1
 fi
+
+BRANCH_OPTS="--branch=${GEPPETTO_BRANCH}"
+
+# TODO: Need a "proper" clean, before deleting the OZONE_HOME
+# if [[ $(which pm2) != 0 ]]; then
+#   pm2 delete-all
+# fi
+# if [[ -d ${OZONE_HOME} ]]; then
+#   echo "Cleaning up existing Ozone install from ${OZONE_HOME}."
+#   rm -rf ${OZONE_HOME}
+#   mkdir -p ${OZONE_HOME}
+# fi
 
 if [[ -d ${GEPPETTO_HOME} ]]; then
   echo "Cleaning up existing geppetto."
   rm -rf ${GEPPETTO_HOME}
 fi
 
-echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
-git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+echo "- ensure git credentials"
+if [[ -z ${GIT_HTTPS_CREDS} ]]; then
+  >&2 echo "GIT_HTTPS_CREDS not available. Cannot proceed."
+  exit 1
+fi
 
-if [[ $? != 0 && $BRANCH != 'develop' ]]; then
-  echo "- Clone failed on branch ${BRANCH}. Trying 'develop'."
+echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
+git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+
+if [[ $? != 0 && $GEPPETTO_BRANCH != 'develop' ]]; then
+  echo "- Clone failed on branch ${GEPPETTO_BRANCH}. Trying 'develop'."
   BRANCH_OPTS="--branch=develop"
-  git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+  git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 fi
 
 if [[ "${AUTODEPLOY,,}" == "true" ]]; then
