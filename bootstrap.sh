@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function create_ssm_user {
   # check if user already exists
   getent passwd ssm-user > /dev/null
@@ -8,17 +10,17 @@ function create_ssm_user {
     useradd --comment "mirror AWS System Manager ssm-user" --create-home --shell /bin/bash ssm-user
     if [[ $? != 0 ]]; then
       >&2 echo "Error while creating user."
-      exit -1
+      exit 1
     fi
     usermod -a -G wheel ssm-user
     if [[ $? != 0 ]]; then
       >&2 echo "Error while updating user permissions."
-      exit -1
+      exit 1
     fi
     echo "ssm-user ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/dont-prompt-ssm-user-for-sudo-password
     if [[ $? != 0 ]]; then
       >&2 echo "Error while updating user sudo password policy."
-      exit -1
+      exit 1
     fi
   fi
 }
@@ -56,5 +58,5 @@ sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} GEPPETTO_BRANCH=${GEPPETTO_
 
 if [[ $? != 0 ]]; then
   >&2 echo "Bootstrap initialization failed."
-  exit -1
+  exit 1
 fi

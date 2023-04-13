@@ -1,3 +1,5 @@
+#!/bin/bash
+
 USER=$(whoami)
 
 if [[ $USER != 'ssm-user' ]]; then
@@ -29,9 +31,22 @@ fi
 OZONE_HOME="/usr/o3"
 GEPPETTO_HOME=${OZONE_HOME}/geppetto
 
-if [[ -v GEPPETTO_BRANCH ]]; then
-  BRANCH_OPTS="--branch=${GEPPETTO_BRANCH}"
+if [[ -z ${GEPPETTO_BRANCH} ]]; then
+  >&2 echo "No GEPPETTO_BRANCH specified. Cannot proceed."
+  exit 1
 fi
+
+BRANCH_OPTS="--branch=${GEPPETTO_BRANCH}"
+
+# TODO: Need a "proper" clean, before deleting the OZONE_HOME
+# if [[ $(which pm2) != 0 ]]; then
+#   pm2 delete-all
+# fi
+# if [[ -d ${OZONE_HOME} ]]; then
+#   echo "Cleaning up existing Ozone install from ${OZONE_HOME}."
+#   rm -rf ${OZONE_HOME}
+#   mkdir -p ${OZONE_HOME}
+# fi
 
 if [[ -d ${GEPPETTO_HOME} ]]; then
   echo "Cleaning up existing geppetto."
@@ -45,12 +60,12 @@ if [[ -z ${GIT_HTTPS_CREDS} ]]; then
 fi
 
 echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
-git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+git clone --progress --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 
 if [[ $? != 0 && $GEPPETTO_BRANCH != 'develop' ]]; then
   echo "- Clone failed on branch ${GEPPETTO_BRANCH}. Trying 'develop'."
   BRANCH_OPTS="--branch=develop"
-  git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+  git clone --progress --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 fi
 
 if [[ "${AUTODEPLOY,,}" == "true" ]]; then
