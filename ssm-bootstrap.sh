@@ -29,8 +29,8 @@ fi
 OZONE_HOME="/usr/o3"
 GEPPETTO_HOME=${OZONE_HOME}/geppetto
 
-if [[ -v BRANCH ]]; then
-  BRANCH_OPTS="--branch=${BRANCH}"
+if [[ -v GEPPETTO_BRANCH ]]; then
+  BRANCH_OPTS="--branch=${GEPPETTO_BRANCH}"
 fi
 
 if [[ -d ${GEPPETTO_HOME} ]]; then
@@ -47,8 +47,8 @@ fi
 echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
 git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 
-if [[ $? != 0 && $BRANCH != 'develop' ]]; then
-  echo "- Clone failed on branch ${BRANCH}. Trying 'develop'."
+if [[ $? != 0 && $GEPPETTO_BRANCH != 'develop' ]]; then
+  echo "- Clone failed on branch ${GEPPETTO_BRANCH}. Trying 'develop'."
   BRANCH_OPTS="--branch=develop"
   git clone ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 fi
