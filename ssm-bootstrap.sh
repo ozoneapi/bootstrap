@@ -60,12 +60,12 @@ if [[ -z ${GIT_HTTPS_CREDS} ]]; then
 fi
 
 echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
-git clone --progress --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 
 if [[ $? != 0 && $GEPPETTO_BRANCH != 'develop' ]]; then
   echo "- Clone failed on branch ${GEPPETTO_BRANCH}. Trying 'develop'."
   BRANCH_OPTS="--branch=develop"
-  git clone --progress --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+  git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 fi
 
 if [[ "${AUTODEPLOY,,}" == "true" ]]; then
