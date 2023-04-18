@@ -71,7 +71,7 @@ fi
 if [[ "${AUTODEPLOY,,}" == "true" ]]; then
   echo "Autodeploy requested."
   sudo ${GEPPETTO_HOME}/scripts/install-ozone-stage1.sh
-  ${GEPPETTO_HOME}/scripts/install-ozone-stage3.sh
+  bash -ic ${GEPPETTO_HOME}/scripts/install-ozone-stage3.sh
 else
   echo "Not running autodeploy."
 fi
