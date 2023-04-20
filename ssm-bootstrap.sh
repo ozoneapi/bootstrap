@@ -12,6 +12,12 @@ if [[ $(git config --global --get credential.helper) == 'store' ]]; then
   git config --global --unset credential.helper
 fi
 
+# for legacy reasons, there is code, in geppetto, to check the existance of
+# git config credential.helper
+# at some point, this should be removed, from code, as well as config
+# so that we do not send Zone git credentials to other Git Repos,
+# that the user may try to access
+# #Security
 echo "Configuring credential.helper"
 # ensure git credential helper that reads creds from AWS
 # use single quotes to stop variable expansion on the shell
@@ -31,10 +37,14 @@ git config --global credential.helper '!f() {
   fi
 }; f'
 
+
+
+# ensure git credential helper, for bitbucker/ozone, that reads creds from AWS
+# prefer this usage, because this will not leak creds to other
+# git servers, than the one we intended
 echo "Configuring credential.https://bitbucket.org/ozoneapi.helper"
 git config --global core.askPass false
 git config --global credential.https://bitbucket.org.useHttpPath true
-# ensure git credential helper, for bitbucker/ozone, that reads creds from AWS
 # use single quotes to stop variable expansion on the shell
 # shellcheck disable=SC2016
 git config --global credential.https://bitbucket.org/ozoneapi.helper '!f() {
@@ -53,6 +63,10 @@ git config --global credential.https://bitbucket.org/ozoneapi.helper '!f() {
 }; f'
 
 OZONE_HOME="/usr/o3"
+
+echo "Make sure OZONE_HOME($OZONE_HOME) exists"
+mkdir -p $OZONE_HOME
+
 GEPPETTO_HOME=${OZONE_HOME}/geppetto
 
 if [[ -z ${GEPPETTO_BRANCH} ]]; then
