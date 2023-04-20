@@ -17,7 +17,7 @@ fi
 # shellcheck disable=SC2016
 git config --global credential.helper '!f() {
   sleep 1
-  if [[ $BASE_RUNTIME == "EC2" ]]; then
+  if [[ -z ${GIT_HTTPS_CREDS} && $BASE_RUNTIME == "EC2" ]]; then
     export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
     export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
     export GIT_HTTPS_CREDS=$(aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
@@ -35,9 +35,9 @@ git config --global credential.https://bitbucket.org.useHttpPath true
 # ensure git credential helper, for bitbucker/ozone, that reads creds from AWS
 # use single quotes to stop variable expansion on the shell
 # shellcheck disable=SC2016
-git config --global credential.bitbucket.org/ozoneapi.helper '!f() {
+git config --global credential.https://bitbucket.org/ozoneapi.helper '!f() {
   sleep 1
-  if [[ $BASE_RUNTIME == "EC2" ]]; then
+  if [[ -z ${GIT_HTTPS_CREDS} && $BASE_RUNTIME == "EC2" ]]; then
     export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
     export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
     export GIT_HTTPS_CREDS=$(aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
