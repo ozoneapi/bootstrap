@@ -10,6 +10,17 @@ fi
 if [[ $(git config --global --get credential.helper) == 'store' ]]; then
   echo "Found credential store to be 'store'. Remove that, use custom store instead"
   git config --global --unset credential.helper
+  # shellcheck disable=SC2016
+  git config --global credential.helper '!f() { \
+    sleep 1; \
+    export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2"); \
+    export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN");\
+    export GIT_HTTPS_CREDS=$(aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text); \
+    local GIT_USERNAME=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f1); \
+    local GIT_ACCESS_CRED=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f2);
+    echo "username=${GIT_USERNAME}";
+    echo "password=${GIT_ACCESS_CRED}"; }; \
+  f'
 fi
 
 # ensure git credential helper is configured to be the "store"
