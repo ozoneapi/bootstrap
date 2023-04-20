@@ -12,6 +12,7 @@ if [[ $(git config --global --get credential.helper) == 'store' ]]; then
   git config --global --unset credential.helper
 fi
 
+echo "Configuring credential.helper"
 # ensure git credential helper that reads creds from AWS
 # use single quotes to stop variable expansion on the shell
 # shellcheck disable=SC2016
@@ -30,6 +31,7 @@ git config --global credential.helper '!f() {
   fi
 }; f'
 
+echo "Configuring credential.https://bitbucket.org/ozoneapi.helper"
 git config --global core.askPass false
 git config --global credential.https://bitbucket.org.useHttpPath true
 # ensure git credential helper, for bitbucker/ozone, that reads creds from AWS
@@ -49,12 +51,6 @@ git config --global credential.https://bitbucket.org/ozoneapi.helper '!f() {
     echo "password=${GIT_ACCESS_CRED}"
   fi
 }; f'
-
-# cross check the store has been configured, otherwise fail
-if [[ -z $(git config --global --get credential.https://bitbucket.org/ozoneapi.helper) ]]; then
-  >&2 echo "git store configuration failed. Cannot proceed."
-  exit 1
-fi
 
 OZONE_HOME="/usr/o3"
 GEPPETTO_HOME=${OZONE_HOME}/geppetto
@@ -88,12 +84,4 @@ if [[ $? != 0 && $GEPPETTO_BRANCH != 'develop' ]]; then
   echo "- Clone failed on branch ${GEPPETTO_BRANCH}. Trying 'develop'."
   BRANCH_OPTS="--branch=develop"
   git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
-fi
-
-if [[ "${AUTODEPLOY,,}" == "true" ]]; then
-  echo "Autodeploy requested."
-  sudo ${GEPPETTO_HOME}/scripts/install-ozone-stage1.sh
-  ${GEPPETTO_HOME}/scripts/install-ozone-stage3.sh
-else
-  echo "Not running autodeploy."
 fi
