@@ -81,12 +81,6 @@ if [[ -d ${GEPPETTO_HOME} ]]; then
   rm -rf ${GEPPETTO_HOME}
 fi
 
-echo "- ensure git credentials"
-if [[ -z ${GIT_HTTPS_CREDS} ]]; then
-  >&2 echo "GIT_HTTPS_CREDS not available. Cannot proceed."
-  exit 1
-fi
-
 echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
 git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
 
