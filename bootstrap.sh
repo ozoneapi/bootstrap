@@ -36,15 +36,6 @@ yum install -y git-core sudo shadow-utils
 create_ssm_user
 
 OZONE_HOME="/usr/o3"
-GEPPETTO_HOME=${OZONE_HOME}/geppetto
-
-if [[ -d ${GEPPETTO_HOME} ]]; then
-  echo "- Cleaning old ${GEPPETTO_HOME}"
-  sudo rm -rf ${GEPPETTO_HOME}
-fi
-
-echo "- Creating ${GEPPETTO_HOME}"
-sudo mkdir -p ${GEPPETTO_HOME}
 
 # assign right permissions
 echo "- Assign user permissions to ${OZONE_HOME}"
