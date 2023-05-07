@@ -53,7 +53,7 @@ sudo chown -R ssm-user:ssm-user ${OZONE_HOME}
 CWD=$(dirname $0)
 REAL_DIR=$(realpath ${CWD})
 
-echo "- run the ssm-user bootstrap script in ${REAL_DIR}"
+echo "- run the ssm-bootstrap-observability bootstrap script in ${REAL_DIR}"
 sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} OBS_BRANCH=${OBS_BRANCH:-${BRANCH}} AUTODEPLOY=${AUTODEPLOY:-"false"} ${REAL_DIR}/ssm-bootstrap-observability.sh
 
 if [[ $? != 0 ]]; then

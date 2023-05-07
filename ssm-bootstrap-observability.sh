@@ -101,4 +101,4 @@ if [[ $? != 0 && $OBS_BRANCH != 'develop' ]]; then
 fi
 
 echo "- Running node initialisation on observability control plane"
-/usr/o3/observability-ctrl-plane/node-init/scripts/install-observers.sh
+/usr/o3/observability-ctrl-plane/node-init/scripts/node-init.sh
