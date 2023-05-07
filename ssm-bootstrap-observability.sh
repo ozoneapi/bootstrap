@@ -99,3 +99,6 @@ if [[ $? != 0 && $OBS_BRANCH != 'develop' ]]; then
   BRANCH_OPTS="--branch=develop"
   git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/observability-ctrl-plane.git ${OBS_HOME}
 fi
+
+echo "- Running node initialisation on observability control plane"
+/usr/o3/observability-ctrl-plane/lib/node-init.sh
