@@ -42,7 +42,6 @@ if [[ -d ${OBS_HOME} ]]; then
   sudo rm -rf ${OBS_HOME}
 fi
 
-
 echo "- Creating ${OBS_HOME}"
 sudo mkdir -p ${OBS_HOME}
 
