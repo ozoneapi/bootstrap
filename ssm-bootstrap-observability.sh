@@ -24,8 +24,9 @@ if [[ -z ${GIT_HTTPS_CREDS} && $BASE_RUNTIME == "EC2" ]]; then
   echo "BASE_RUNTIME is ${BASE_RUNTIME}"
 else
   echo "Attempting to read git.https.creds from SSM Parameter Store"
-  export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
 
+  echo "Reading TOKEN from EC2 Metadata"
+  export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
   # if no TOKEN, error out
   if [[ -z ${TOKEN} ]]; then
     >&2 echo "Could not get TOKEN from EC2 Metadata. Cannot proceed."
@@ -34,6 +35,7 @@ else
     echo "imdsv2 token retrieved successfully"
   fi
 
+  echo "Reading TOKEN from EC2 Metadata"
   export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
   # if no REGION, error out
   if [[ -z ${REGION} ]]; then
@@ -96,8 +98,8 @@ fi
 echo "Cloning Observability Control Plane"
 OZONE_HOME="/usr/o3"
 
-echo "Make sure OZONE_HOME($OZONE_HOME) exists"
-mkdir -p $OZONE_HOME
+echo "Make sure OZONE_HOME ${OZONE_HOME} exists"
+mkdir -p ${OZONE_HOME}
 
 OBS_HOME=${OZONE_HOME}/observability-ctrl-plane
 
