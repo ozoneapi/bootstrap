@@ -54,7 +54,7 @@ else
     echo "GIT_HTTPS_CREDS retrieved successfully"
   fi
 
-  local GIT_USERNAME=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f1)
+  export GIT_USERNAME=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f1)
   # if no GIT_USERNAME, error out
   if [[ -z ${GIT_USERNAME} ]]; then
     >&2 echo "Could not get GIT_USERNAME from GIT_HTTPS_CREDS. Cannot proceed."
@@ -63,7 +63,7 @@ else
     echo "GIT_USERNAME extracted from GIT_HTTPS_CREDS"
   fi
 
-  local GIT_ACCESS_CRED=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f2)
+  export GIT_ACCESS_CRED=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f2)
   # if no GIT_ACCESS_CRED, error out
   if [[ -z ${GIT_ACCESS_CRED} ]]; then
     >&2 echo "Could not get GIT_ACCESS_CRED from GIT_HTTPS_CREDS. Cannot proceed."
