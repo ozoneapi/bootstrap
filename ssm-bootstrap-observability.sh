@@ -73,7 +73,7 @@ else
   fi
 fi
 
-git config --global credential.help username=${GIT_USERNAME} password=${GIT_ACCESS_CRED}
+git config --global credential.helper 'username=${GIT_USERNAME} password=${GIT_ACCESS_CRED}'
 # if failed, error out
 if [[ $? != 0 ]]; then
   >&2 echo "Could not set credential.helper Cannot proceed."
@@ -84,7 +84,7 @@ fi
 
 git config --global core.askPass false
 git config --global credential.https://bitbucket.org.useHttpPath true
-git config --global credential.https://bitbucket.org/ozoneapi.helper username=${GIT_USERNAME} password=${GIT_ACCESS_CRED}
+git config --global credential.https://bitbucket.org/ozoneapi.helper 'username=${GIT_USERNAME} password=${GIT_ACCESS_CRED}'
 if [[ $? != 0 ]]; then
   >&2 echo "Could not set credential.https://bitbucket.org/ozoneapi.helper  Cannot proceed."
   exit 1

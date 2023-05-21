@@ -29,10 +29,7 @@ function create_ssm_user {
 echo "Bootstrapping Observability Control Plane"
 
 # ensure git is installed
-echo "- Installing bootstrapping tools"
-yum install -y git-core sudo shadow-utils
-
-# ensure other tools needed by observability are in place
+echo "- Installing bootstrapping and observability tools"
 yum install -y less jq git-core tar unzip which sudo procps openssl shadow-utils ca-certificates findutils logrotate
 
 # create the ssm user
