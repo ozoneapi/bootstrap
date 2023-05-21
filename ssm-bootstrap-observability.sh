@@ -42,7 +42,7 @@ else
     >&2 echo "Could not get REGION from EC2 Metadata. Cannot proceed."
     exit 1
   else
-    echo "REGION is set to ${REGION}
+    echo "REGION is set to ${REGION}"
   fi
 
   export GIT_HTTPS_CREDS=$(aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
