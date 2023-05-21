@@ -123,5 +123,21 @@ if [[ $? != 0 ]]; then
   exit 1
 fi
 
+# clone geppetto if required
+GEPPETTO_HOME=${OZONE_HOME}/geppetto
+
+# check if geppetto exists
+if [[ ! -d ${GEPPETTO_HOME} ]]; then
+  echo "Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
+  git clone --branch=develop https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+
+  if [[ $? != 0 ]]; then
+    echo "Failed to clone geppetto"
+    exit 1
+  fi
+else
+  echo "Geppetto already exists. Skipping cloning."
+fi
+
 echo "- Running node initialisation on observability control plane"
 /usr/o3/observability-ctrl-plane/node-init/scripts/node-init.sh
