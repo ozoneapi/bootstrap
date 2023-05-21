@@ -34,6 +34,9 @@ git config --global credential.helper '!f() {
     local GIT_ACCESS_CRED=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f2)
     echo "username=${GIT_USERNAME}"
     echo "password=${GIT_ACCESS_CRED}"
+  else
+    echo "No git credentials found in SSM Parameter Store - ${GIT_HTTPS_CREDS}"
+    aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text
   fi
 }; f'
 
