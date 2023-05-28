@@ -31,7 +31,7 @@ fi
 
 # get the swarm ip address if its already been initialised
 echo "Retrieving swarm ip address for swarm ${SWARM_NAME}"
-SWARM_IP=$(getSSMParameter "${SWARM_NAME}.SwarmIpAddress")
+SWARM_IP=$(getSsmParameter "${SWARM_NAME}.SwarmIpAddress")
 
 # if not initialised, initialise it
 if [[ -z ${SWARM_IP} ]]; then
@@ -55,7 +55,7 @@ else
   # swarm initialised, join it as a manager node
   echo "Swarm IP address is ${SWARM_IP}. Joining swarm."
 
-  SWARM_TOKEN=$(getSSMParameter "${SWARM_NAME}.SwarmJoinToken")
+  SWARM_TOKEN=$(getSsmParameter "${SWARM_NAME}.SwarmJoinToken")
   if [[ -z ${SWARM_TOKEN} ]]; then
     >&2 echo "Swarm join token not found. Cannot proceed."
     exit 1
