@@ -51,19 +51,36 @@ if [[ -z ${SWARM_IP} ]]; then
     exit 1
   fi
 
+  JOIN_TOKEN=$(docker swarm join-token worker -q)
+  MANAGER_JOIN_TOKEN=$(docker swarm join-token manager -q)
+
+  echo "Setting SwarmJoinToken to ${JOIN_TOKEN}"
+  setSsmParameter "${SWARM_NAME}.JoinToken" "${JOIN_TOKEN}"
+  if [[ $? != 0 ]]; then
+    >&2 echo "Error while setting swarm join token"
+    exit 1
+  fi
+
+  echo "Setting SwarmManagerJoinToken to ${MANAGER_JOIN_TOKEN}"
+  setSsmParameter "${SWARM_NAME}.SwarmManagerJoinToken" "${MANAGER_JOIN_TOKEN}"
+  if [[ $? != 0 ]]; then
+    >&2 echo "Error while setting swarm manager join token"
+    exit 1
+  fi
+
 else
   # swarm initialised, join it as a manager node
   echo "Swarm IP address is ${SWARM_IP}. Joining swarm."
 
-  SWARM_TOKEN=$(getSsmParameter "${SWARM_NAME}.SwarmJoinToken")
-  if [[ -z ${SWARM_TOKEN} ]]; then
-    >&2 echo "Swarm join token not found. Cannot proceed."
+  MANAGER_JOIN_TOKEN=$(getSsmParameter "${SWARM_NAME}.SwarmManagerJoinToken")
+  if [[ -z ${MANAGER_JOIN_TOKEN} ]]; then
+    >&2 echo "Mnaager join token not found. Cannot proceed."
     exit 1
   fi
 
-  echo "Joining swarm with token ${SWARM_TOKEN}"
+  echo "Joining swarm with token ${MANAGER_JOIN_TOKEN}"
   docker swarm join \
-    --token ${SWARM_TOKEN} \
+    --token ${MANAGER_JOIN_TOKEN} \
     ${SWARM_IP}
 
   if [[ $? != 0 ]]; then
