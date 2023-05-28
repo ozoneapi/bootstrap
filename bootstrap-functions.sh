@@ -48,3 +48,16 @@ function getSsmParameter() {
     --query Parameter.Value \
     --output text
 }
+
+function setSsmParameter() {
+  local PARAMETER_NAME=${1}
+  local PARAMETER_VALUE=${2}
+  local REGION=$(getEc2Region)
+
+  aws ssm put-parameter \
+    --name ${PARAMETER_NAME} \
+    --value "${PARAMETER_VALUE}" \
+    --type SecureString \
+    --region ${REGION} \
+    --overwrite
+}
