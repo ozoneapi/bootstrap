@@ -39,7 +39,7 @@ if [[ -z ${SWARM_IP} ]]; then
   SWARM_IP=$(getPrivateIpAddress)
   echo "Setting Swarm IP address to ${SWARM_IP}"
 
-  setSSMParameter "${SWARM_NAME}.SwarmIpAddress" "${SWARM_IP}"
+  setSsmParameter "${SWARM_NAME}.SwarmIpAddress" "${SWARM_IP}"
   if [[ $? != 0 ]]; then
     >&2 echo "Error while setting swarm ip address."
     exit 1
