@@ -53,7 +53,7 @@ echo "Logging in to docker repository - done"
 STACK_NAME=$(getTag "StackName")
 echo "getting stack name ${STACK_NAME}"
 
-B64_DOCKER_RUN_COMMAND=$(getSsmParameter "${STACK_NAME}.DockerRunCommand")
+B64_DOCKER_RUN_COMMAND=$(getSsmParameter "${STACK_NAME}.docker-run-command")
 
 DOCKER_RUN_COMMAND=$(echo ${B64_DOCKER_RUN_COMMAND} | base64 -d)
 
