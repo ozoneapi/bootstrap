@@ -47,6 +47,7 @@ if [[ $? != 0 ]]; then
   >&2 echo "Error while logging in to docker repository."
   exit 1
 fi
+echo "Logging in to docker repository - done"
 
 # all set to run
 STACK_NAME=$(getTag "StackName")
