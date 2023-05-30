@@ -49,7 +49,11 @@ if [[ $? != 0 ]]; then
 fi
 
 # all set to run
-DOCKER_RUN_COMMAND=$(getTag "DockerRunCommand")
+B64_DOCKER_RUN_COMMAND=$(getTag "DockerRunCommand")
+
+DOCKER_RUN_COMMAND=$(echo ${B64_DOCKER_RUN_COMMAND} | base64 -d)
+
+echo "Running ${DOCKER_RUN_COMMAND} - start"
 docker run ${DOCKER_RUN_COMMAND}
 if [[ $? != 0 ]]; then
   >&2 echo "Error while running docker container."
