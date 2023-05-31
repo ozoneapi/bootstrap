@@ -63,7 +63,7 @@ function setSsmParameter() {
 }
 
 function yumInstall() {
-  local PACKAGE_NAME=${1}
+  local PACKAGE_NAMES=${*}
 
   # sleep while yum lock is active
   while [[ -f /var/run/yum.pid ]]; do
@@ -71,5 +71,5 @@ function yumInstall() {
     sleep 5
   done
 
-  yum install -y ${PACKAGE_NAME}
+  yum install -y ${PACKAGE_NAMES}
 }

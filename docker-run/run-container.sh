@@ -9,7 +9,7 @@ fi
 # install docker
 echo "Installing and starting docker - start"
 
-yumInstall -y docker
+yumInstall docker
 if [[ $? != 0 ]]; then
   >&2 echo "Error while installing docker."
   exit 1
