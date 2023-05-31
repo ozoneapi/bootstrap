@@ -65,11 +65,22 @@ function setSsmParameter() {
 function yumInstall() {
   local PACKAGE_NAMES=${*}
 
-  # sleep while yum lock is active
-  while [[ -f /var/run/yum.pid ]]; do
-    echo "`date` - yum lock file exists. Waiting for yum to finish"
+
+  # try 3 times to install the packages
+  for i in {1..3}; do
+    # sleep while yum lock is active
+    while [[ -f /var/run/yum.pid ]]; do
+      echo "`date` - yum lock file exists. Waiting for yum to finish"
+      sleep 5
+    done
+
+    yum install -y ${PACKAGE_NAMES}
+    if [[ $? == 0 ]]; then
+      echo "`date` - yum install succeeded"
+      break
+    fi
+
+    echo "Installation failed on attempt ${i}. Sleeping for 5 seconds"
     sleep 5
   done
-
-  yum install -y ${PACKAGE_NAMES}
 }
