@@ -61,3 +61,15 @@ function setSsmParameter() {
     --region ${REGION} \
     --overwrite
 }
+
+function yumInstall() {
+  local PACKAGE_NAME=${1}
+
+  # sleep while yum lock is active
+  while [[ -f /var/run/yum.pid ]]; do
+    echo "`date` - yum lock file exists. Waiting for yum to finish"
+    sleep 5
+  done
+
+  yum install -y ${PACKAGE_NAME}
+}
