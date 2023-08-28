@@ -84,3 +84,121 @@ function yumInstall() {
     sleep 5
   done
 }
+
+
+function create_ssm_user {
+  # check if user already exists
+  getent passwd ssm-user > /dev/null
+  if [[ $? = 0 ]]; then
+    echo "ssm-user user already exists. Don't need to do anything more."
+  else
+    # ssm-user creation
+    useradd --comment "mirror AWS System Manager ssm-user" --create-home --shell /bin/bash ssm-user
+    if [[ $? != 0 ]]; then
+      >&2 echo "Error while creating user."
+      exit 1
+    fi
+    usermod -a -G wheel ssm-user
+    if [[ $? != 0 ]]; then
+      >&2 echo "Error while updating user permissions."
+      exit 1
+    fi
+    echo "ssm-user ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/dont-prompt-ssm-user-for-sudo-password
+    if [[ $? != 0 ]]; then
+      >&2 echo "Error while updating user sudo password policy."
+      exit 1
+    fi
+  fi
+
+  # make sure ozone folder exist
+  mkdir -p /usr/o3
+  chown ssm-user: /usr/o3
+
+
+}
+
+function configure_git {
+
+  echo "configuring git credential helper - start"
+  git config --global credential.helper '!f() {
+    sleep 1
+    if [[ -z ${GIT_HTTPS_CREDS} ]]; then
+      export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
+      export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
+      export GIT_HTTPS_CREDS=$(aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
+    fi
+    if [[ -n $GIT_HTTPS_CREDS ]]; then
+      local GIT_USERNAME=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f1)
+      local GIT_ACCESS_CRED=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f2)
+      echo "username=${GIT_USERNAME}"
+      echo "password=${GIT_ACCESS_CRED}"
+    fi
+  }; f'
+  echo "configuring git credential helper - done"
+
+  echo "Configuring credential.https://bitbucket.org/ozoneapi.helper - start"
+  git config --global credential.https://bitbucket.org.useHttpPath true
+  git config --global credential.https://bitbucket.org/ozoneapi.helper '!f() {
+    sleep 1
+    if [[ -z ${GIT_HTTPS_CREDS} ]]; then
+      export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
+      export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
+      export GIT_HTTPS_CREDS=$(aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
+    fi
+    if [[ -n $GIT_HTTPS_CREDS ]]; then
+      local GIT_USERNAME=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f1)
+      local GIT_ACCESS_CRED=$(echo ${GIT_HTTPS_CREDS} | cut -d ':' -f2)
+      echo "username=${GIT_USERNAME}"
+      echo "password=${GIT_ACCESS_CRED}"
+    fi
+  }; f'
+  echo "Configuring credential.https://bitbucket.org/ozoneapi.helper - done"
+
+}
+
+function ensure_ssm_user {
+  USER=$(whoami)
+
+  if [[ $USER != 'ssm-user' ]]; then
+    >&2 echo "Not running as ssm-user. Cannot proceed."
+    exit 1
+  fi
+}
+
+function clone_repo {
+
+  # ensure we have two params
+  if [[ $# != 2 ]]; then
+    >&2 echo "Usage: clone_repo <repo_url> <repo_branch>"
+    exit 1
+  fi
+
+  local REPO_URL=${1}
+  local REPO_BRANCH=${2}
+
+  echo "Cloning repo ${REPO_URL} branch ${REPO_BRANCH}"
+
+  OZONE_HOME="/usr/o3"
+
+  # ensure OZONE_HOME exists
+  if [[ ! -d ${OZONE_HOME} ]]; then
+    >&2 echo "${OZONE_HOME} does not exist"
+    exit 1
+  fi
+
+
+  BRANCH_OPTS="--branch=${GEPPETTO_BRANCH}"
+
+  cd ${OZONE_HOME}
+
+  git clone --quiet \
+    --quiet \
+    --branch ${REPO_BRANCH} \
+    ${REPO_URL}
+
+  if [[ $? != 0 ]]; then
+    >&2 echo "Error while cloning repo."
+    exit 1
+  fi
+
+}
