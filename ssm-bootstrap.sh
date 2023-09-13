@@ -2,12 +2,12 @@
 
 USER=$(whoami)
 
-if [[ $USER != 'ssm-user' ]]; then
+if [ $USER != 'ssm-user' ]; then
   >&2 echo "Not running as ssm-user. Cannot proceed."
   exit 1
 fi
 
-if [[ $(git config --global --get credential.helper) == 'store' ]]; then
+if [ $(git config --global --get credential.helper) == 'store' ]; then
   echo "Found credential store to be 'store'. This is legacy. Will be changed to use the SSM Parameter store"
   git config --global --unset credential.helper
 fi
@@ -24,7 +24,7 @@ echo "Configuring credential.helper"
 # shellcheck disable=SC2016
 git config --global credential.helper '!f() {
   sleep 1
-  if [ -z ${GIT_HTTPS_CREDS} && $BASE_RUNTIME == "EC2" ]; then
+  if [ -z ${GIT_HTTPS_CREDS} ]; then
     export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
     export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
     export GIT_HTTPS_CREDS=$(aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
@@ -49,7 +49,7 @@ git config --global credential.https://bitbucket.org.useHttpPath true
 # shellcheck disable=SC2016
 git config --global credential.https://bitbucket.org/ozoneapi.helper '!f() {
   sleep 1
-  if [ -z ${GIT_HTTPS_CREDS} && $BASE_RUNTIME == "EC2" ]; then
+  if [ -z ${GIT_HTTPS_CREDS} ]; then
     export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
     export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
     export GIT_HTTPS_CREDS=$(aws ssm get-parameter --name git.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
@@ -69,7 +69,7 @@ mkdir -p $OZONE_HOME
 
 OZ_DEPLOY_HOME=${OZONE_HOME}/oz-deploy
 
-if [[ -z ${OZ_DEPLOY_BRANCH} ]]; then
+if [ -z ${OZ_DEPLOY_BRANCH} ]; then
   >&2 echo "No OZ_DEPLOY_BRANCH specified. Cannot proceed."
   exit 1
 fi
@@ -77,16 +77,16 @@ fi
 BRANCH_OPTS="--branch=${OZ_DEPLOY_BRANCH}"
 
 # TODO: Need a "proper" clean, before deleting the OZONE_HOME
-# if [[ $(which pm2) != 0 ]]; then
+# if [ $(which pm2) != 0 ]; then
 #   pm2 delete-all
 # fi
-# if [[ -d ${OZONE_HOME} ]]; then
+# if [ -d ${OZONE_HOME} ]; then
 #   echo "Cleaning up existing Ozone install from ${OZONE_HOME}."
 #   rm -rf ${OZONE_HOME}
 #   mkdir -p ${OZONE_HOME}
 # fi
 
-if [[ -d ${OZ_DEPLOY_HOME} ]]; then
+if [ -d ${OZ_DEPLOY_HOME} ]; then
   echo "Cleaning up existing oz-deploy."
   rm -rf ${OZ_DEPLOY_HOME}
 fi
@@ -94,7 +94,7 @@ fi
 echo "- Clone oz-deploy into ${OZ_DEPLOY_HOME} ${BRANCH_OPTS}"
 git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/oz-deploy.git ${OZ_DEPLOY_HOME}
 
-if [[ $? != 0 && $OZ_DEPLOY_BRANCH != 'develop' ]]; then
+if [ $? != 0 && $OZ_DEPLOY_BRANCH != 'develop' ]; then
   echo "- Clone failed on branch ${OZ_DEPLOY_BRANCH}. Trying 'develop'."
   BRANCH_OPTS="--branch=develop"
   git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/oz-deploy.git ${OZ_DEPLOY_HOME}
