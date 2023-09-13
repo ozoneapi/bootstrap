@@ -2,22 +2,22 @@
 
 function create_ssm_user {
   # check if user already exists
-  getent passwd ssm-user > /dev/null
+  sudo getent passwd ssm-user > /dev/null
   if [ "$?" = 0 ]; then
     echo "ssm-user user already exists. Don't need to do anything more."
   else
     # ssm-user creation
-    useradd --comment "mirror AWS System Manager ssm-user" --create-home --shell /bin/bash ssm-user
+    sudo useradd --comment "mirror AWS System Manager ssm-user" --create-home --shell /bin/bash ssm-user
     if [ "$?" != 0 ]; then
       >&2 echo "Error while creating user."
       exit 1
     fi
-    usermod -a -G root ssm-user
+    sudo usermod -a -G sudo ssm-user
     if [ "$?" != 0 ]; then
       >&2 echo "Error while updating user permissions."
       exit 1
     fi
-    echo "ssm-user ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/dont-prompt-ssm-user-for-sudo-password
+    echo "ssm-user ALL=(ALL:ALL) NOPASSWD: ALL" > sudo /etc/sudoers.d/dont-prompt-ssm-user-for-sudo-password
     if [ "$?" != 0 ]; then
       >&2 echo "Error while updating user sudo password policy."
       exit 1
@@ -27,10 +27,10 @@ function create_ssm_user {
 
 #/usr/bin/env bash
 echo "Bootstrapping OzDeploy"
-apt-get update
+sudo apt-get update
 # ensure git is installed
 echo "- Installing bootstrapping tools"
-apt-get install -y git-core sudo shadow-utils unzip wget
+sudo apt-get install -y git-core sudo shadow-utils unzip wget
 # cd /tmp
 # curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip"
 # unzip awscliv2.zip

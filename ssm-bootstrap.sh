@@ -65,7 +65,7 @@ git config --global credential.https://bitbucket.org/ozoneapi.helper '!f() {
 OZONE_HOME="/usr/o3"
 
 echo "Make sure OZONE_HOME($OZONE_HOME) exists"
-mkdir -p $OZONE_HOME
+sudo mkdir -p $OZONE_HOME
 
 OZ_DEPLOY_HOME=${OZONE_HOME}/oz-deploy
 
@@ -88,7 +88,7 @@ BRANCH_OPTS="--branch=${OZ_DEPLOY_BRANCH}"
 
 if [ -d ${OZ_DEPLOY_HOME} ]; then
   echo "Cleaning up existing oz-deploy."
-  rm -rf ${OZ_DEPLOY_HOME}
+  sudo rm -rf ${OZ_DEPLOY_HOME}
 fi
 
 echo "- Clone oz-deploy into ${OZ_DEPLOY_HOME} ${BRANCH_OPTS}"
