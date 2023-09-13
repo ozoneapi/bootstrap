@@ -6,8 +6,8 @@ if [ "$USER" != 'ssm-user' ]; then
   >&2 echo "Not running as ssm-user. Cannot proceed."
   exit 1
 fi
-
-if [ $(git config --global --get credential.helper) == 'store' ]; then
+GIT_STORE=$(git config --global --get credential.helper)
+if [ "$GIT_STORE" = 'store' ]; then
   echo "Found credential store to be 'store'. This is legacy. Will be changed to use the SSM Parameter store"
   git config --global --unset credential.helper
 fi
