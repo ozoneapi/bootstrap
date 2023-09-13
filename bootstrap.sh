@@ -46,16 +46,16 @@ rm -rf awscliv2.zip
 create_ssm_user
 
 OZONE_HOME="/usr/o3"
-GEPPETTO_HOME=${OZONE_HOME}/geppetto
-if [[ -d ${GEPPETTO_HOME} ]]; then
-  echo "- Cleaning old ${GEPPETTO_HOME}"
-  sudo rm -rf ${GEPPETTO_HOME}
+OZ_DEPLOY_HOME=${OZONE_HOME}/oz-deploy
+if [[ -d ${OZ_DEPLOY_HOME} ]]; then
+  echo "- Cleaning old ${OZ_DEPLOY_HOME}"
+  sudo rm -rf ${OZ_DEPLOY_HOME}
 fi
 
 
-echo "- Creating ${GEPPETTO_HOME}"
+echo "- Creating ${OZ_DEPLOY_HOME}"
 
-sudo mkdir -p ${GEPPETTO_HOME}
+sudo mkdir -p ${OZ_DEPLOY_HOME}
 # assign right permissions
 echo "- Assign user permissions to ${OZONE_HOME}"
 sudo chown -R ssm-user:ssm-user ${OZONE_HOME}
@@ -64,7 +64,7 @@ CWD=$(dirname $0)
 REAL_DIR=$(realpath ${CWD})
 
 echo "- run the ssm-user bootstrap script in ${REAL_DIR}"
-sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} GEPPETTO_BRANCH=${GEPPETTO_BRANCH:-${BRANCH}} AUTODEPLOY=${AUTODEPLOY:-"false"} ${REAL_DIR}/ssm-bootstrap.sh
+sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} OZ_DEPLOY_BRANCH=${OZ_DEPLOY_BRANCH:-${BRANCH}} AUTODEPLOY=${AUTODEPLOY:-"false"} ${REAL_DIR}/ssm-bootstrap.sh
 
 if [[ $? != 0 ]]; then
   >&2 echo "Bootstrap initialization failed."
