@@ -7,7 +7,7 @@ function create_ssm_user {
     echo "ssm-user user already exists. Don't need to do anything more."
   else
     # ssm-user creation
-    useradd --comment "mirror AWS System Manager ssm-user" --create-home --shell /bin/bash ssm-user
+    useradd --comment "mirror AWS System Manager ozone-user" --create-home --shell /bin/bash ssm-user
     if [[ $? != 0 ]]; then
       >&2 echo "Error while creating user."
       exit 1
@@ -17,7 +17,7 @@ function create_ssm_user {
       >&2 echo "Error while updating user permissions."
       exit 1
     fi
-    echo "ssm-user ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/dont-prompt-ssm-user-for-sudo-password
+    echo "ssm-user ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/dont-prompt-ozone-user-for-sudo-password
     if [[ $? != 0 ]]; then
       >&2 echo "Error while updating user sudo password policy."
       exit 1
@@ -27,11 +27,21 @@ function create_ssm_user {
 
 #/usr/bin/env bash
 echo "Bootstrapping Geppetto"
-
+apt-get update
 # ensure git is installed
 echo "- Installing bootstrapping tools"
-yum install -y git-core sudo shadow-utils
+apt-get install -y git-core sudo shadow-utils unzip wget
+cd /tmp
+curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+./aws/install
+if [[ $? != 0 ]]; then
+  >&2 echo "Issue in installing AWS CLI. Exiting....."
+  exit -1
+fi
+echo "aws-cli is installed"
 
+rm -rf awscliv2.zip
 # create the ssm user
 create_ssm_user
 

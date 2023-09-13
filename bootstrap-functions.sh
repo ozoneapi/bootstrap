@@ -74,7 +74,7 @@ function yumInstall() {
       sleep 5
     done
 
-    yum install -y ${PACKAGE_NAMES}
+    apt-get install -y ${PACKAGE_NAMES}
     if [[ $? == 0 ]]; then
       echo "`date` - yum install succeeded"
       break

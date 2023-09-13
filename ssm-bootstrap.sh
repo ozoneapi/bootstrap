@@ -67,14 +67,14 @@ OZONE_HOME="/usr/o3"
 echo "Make sure OZONE_HOME($OZONE_HOME) exists"
 mkdir -p $OZONE_HOME
 
-GEPPETTO_HOME=${OZONE_HOME}/geppetto
+OZ_DEPLOY_HOME=${OZONE_HOME}/oz-deploy
 
-if [[ -z ${GEPPETTO_BRANCH} ]]; then
-  >&2 echo "No GEPPETTO_BRANCH specified. Cannot proceed."
+if [[ -z ${OZ_DEPLOY_BRANCH} ]]; then
+  >&2 echo "No OZ_DEPLOY_BRANCH specified. Cannot proceed."
   exit 1
 fi
 
-BRANCH_OPTS="--branch=${GEPPETTO_BRANCH}"
+BRANCH_OPTS="--branch=${OZ_DEPLOY_BRANCH}"
 
 # TODO: Need a "proper" clean, before deleting the OZONE_HOME
 # if [[ $(which pm2) != 0 ]]; then
@@ -86,16 +86,16 @@ BRANCH_OPTS="--branch=${GEPPETTO_BRANCH}"
 #   mkdir -p ${OZONE_HOME}
 # fi
 
-if [[ -d ${GEPPETTO_HOME} ]]; then
+if [[ -d ${OZ_DEPLOY_HOME} ]]; then
   echo "Cleaning up existing geppetto."
-  rm -rf ${GEPPETTO_HOME}
+  rm -rf ${OZ_DEPLOY_HOME}
 fi
 
-echo "- Clone geppetto into ${GEPPETTO_HOME} ${BRANCH_OPTS}"
-git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+echo "- Clone oz-deploy into ${OZ_DEPLOY_HOME} ${BRANCH_OPTS}"
+git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/oz-deploy.git ${OZ_DEPLOY_HOME}
 
-if [[ $? != 0 && $GEPPETTO_BRANCH != 'develop' ]]; then
-  echo "- Clone failed on branch ${GEPPETTO_BRANCH}. Trying 'develop'."
+if [[ $? != 0 && $OZ_DEPLOY_BRANCH != 'develop' ]]; then
+  echo "- Clone failed on branch ${OZ_DEPLOY_BRANCH}. Trying 'develop'."
   BRANCH_OPTS="--branch=develop"
-  git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/geppetto.git ${GEPPETTO_HOME}
+  git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/oz-deploy.git ${OZ_DEPLOY_HOME}
 fi
