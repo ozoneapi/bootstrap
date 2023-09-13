@@ -87,7 +87,7 @@ BRANCH_OPTS="--branch=${OZ_DEPLOY_BRANCH}"
 # fi
 
 if [[ -d ${OZ_DEPLOY_HOME} ]]; then
-  echo "Cleaning up existing geppetto."
+  echo "Cleaning up existing oz-deploy."
   rm -rf ${OZ_DEPLOY_HOME}
 fi
 

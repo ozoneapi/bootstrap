@@ -26,22 +26,22 @@ function create_ssm_user {
 }
 
 #/usr/bin/env bash
-echo "Bootstrapping Geppetto"
+echo "Bootstrapping OzDeploy"
 apt-get update
 # ensure git is installed
 echo "- Installing bootstrapping tools"
 apt-get install -y git-core sudo shadow-utils unzip wget
-cd /tmp
-curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-./aws/install
-if [[ $? != 0 ]]; then
-  >&2 echo "Issue in installing AWS CLI. Exiting....."
-  exit -1
-fi
-echo "aws-cli is installed"
+# cd /tmp
+# curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip"
+# unzip awscliv2.zip
+# ./aws/install
+# if [[ $? != 0 ]]; then
+#   >&2 echo "Issue in installing AWS CLI. Exiting....."
+#   exit -1
+# fi
+# echo "aws-cli is installed"
 
-rm -rf awscliv2.zip
+# rm -rf awscliv2.zip
 # create the ssm user
 create_ssm_user
 
