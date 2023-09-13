@@ -12,7 +12,7 @@ function create_ssm_user {
       >&2 echo "Error while creating user."
       exit 1
     fi
-    usermod -a -G wheel ssm-user
+    usermod -a -G root ssm-user
     if [ "$?" != 0 ]; then
       >&2 echo "Error while updating user permissions."
       exit 1
