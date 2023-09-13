@@ -2,7 +2,7 @@
 
 USER=$(whoami)
 
-if [ $USER != 'ssm-user' ]; then
+if [ "$USER" != 'ssm-user' ]; then
   >&2 echo "Not running as ssm-user. Cannot proceed."
   exit 1
 fi
@@ -94,7 +94,7 @@ fi
 echo "- Clone oz-deploy into ${OZ_DEPLOY_HOME} ${BRANCH_OPTS}"
 git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/oz-deploy.git ${OZ_DEPLOY_HOME}
 
-if [ $? != 0 && $OZ_DEPLOY_BRANCH != 'develop' ]; then
+if [ "$?" != 0 ] && [ $OZ_DEPLOY_BRANCH != 'develop' ]; then
   echo "- Clone failed on branch ${OZ_DEPLOY_BRANCH}. Trying 'develop'."
   BRANCH_OPTS="--branch=develop"
   git clone --quiet ${BRANCH_OPTS} https://bitbucket.org/ozoneapi/oz-deploy.git ${OZ_DEPLOY_HOME}
