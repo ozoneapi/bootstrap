@@ -30,7 +30,8 @@ echo "Bootstrapping Observability Control Plane"
 
 # ensure git is installed
 echo "- Installing bootstrapping and observability tools"
-yum install -y less jq git-core tar unzip which sudo procps openssl shadow-utils ca-certificates findutils logrotate
+. /etc/os-release && [ "$ID" = "amzn" ] && yum install -y less jq git-core tar unzip which sudo procps openssl shadow-utils ca-certificates findutils logrotate
+. /etc/os-release && [ "$ID" = "ubuntu" ] && apt-get install -y less jq git tar unzip sudo procps openssl ca-certificates findutils logrotate
 
 # create the ssm user
 create_ssm_user
