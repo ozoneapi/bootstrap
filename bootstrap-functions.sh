@@ -127,6 +127,12 @@ function configure_git {
       export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
       export GITHUB_HTTPS_CREDS=$(aws ssm get-parameter --name github.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
     fi
+    if [[ -n $GITHUB_HTTPS_CREDS ]]; then
+      local GIT_USERNAME=$(echo ${GITHUB_HTTPS_CREDS} | cut -d ':' -f1)
+      local GIT_ACCESS_CRED=$(echo ${GITHUB_HTTPS_CREDS} | cut -d ':' -f2)
+      echo "username=${GIT_USERNAME}"
+      echo "password=${GIT_ACCESS_CRED}"
+    fi
   }; f'
   echo "configuring git credential helper - done"
 
@@ -138,6 +144,12 @@ function configure_git {
       export TOKEN=$(curl --max-time 0.5 -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2")
       export REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region -H "X-aws-ec2-metadata-token: $TOKEN")
       export GITHUB_HTTPS_CREDS=$(aws ssm get-parameter --name github.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
+    fi
+    if [[ -n $GITHUB_HTTPS_CREDS ]]; then
+      local GIT_USERNAME=$(echo ${GITHUB_HTTPS_CREDS} | cut -d ':' -f1)
+      local GIT_ACCESS_CRED=$(echo ${GITHUB_HTTPS_CREDS} | cut -d ':' -f2)
+      echo "username=${GIT_USERNAME}"
+      echo "password=${GIT_ACCESS_CRED}"
     fi
   }; f'
   echo "Configuring credential.https://github.com/ozoneapi.helper - done"
