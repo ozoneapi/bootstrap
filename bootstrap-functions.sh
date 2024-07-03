@@ -128,10 +128,8 @@ function configure_git {
       export GITHUB_HTTPS_CREDS=$(aws ssm get-parameter --name github.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
     fi
     if [[ -n $GITHUB_HTTPS_CREDS ]]; then
-      local GIT_USERNAME=$(echo ${GITHUB_HTTPS_CREDS} | cut -d ':' -f1)
-      local GIT_ACCESS_CRED=$(echo ${GITHUB_HTTPS_CREDS} | cut -d ':' -f2)
-      echo "username=${GIT_USERNAME}"
-      echo "password=${GIT_ACCESS_CRED}"
+      echo "username=${GITHUB_HTTPS_CREDS}"
+      echo "password="
     fi
   }; f'
   echo "configuring git credential helper - done"
@@ -146,10 +144,8 @@ function configure_git {
       export GITHUB_HTTPS_CREDS=$(aws ssm get-parameter --name github.https.creds --region ${REGION} --with-decryption --query Parameter.Value --output text)
     fi
     if [[ -n $GITHUB_HTTPS_CREDS ]]; then
-      local GIT_USERNAME=$(echo ${GITHUB_HTTPS_CREDS} | cut -d ':' -f1)
-      local GIT_ACCESS_CRED=$(echo ${GITHUB_HTTPS_CREDS} | cut -d ':' -f2)
-      echo "username=${GIT_USERNAME}"
-      echo "password=${GIT_ACCESS_CRED}"
+      echo "username=${GITHUB_HTTPS_CREDS}"
+      echo "password="
     fi
   }; f'
   echo "Configuring credential.https://github.com/ozoneapi.helper - done"
