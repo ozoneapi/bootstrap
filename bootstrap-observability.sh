@@ -53,7 +53,7 @@ CWD=$(dirname $0)
 REAL_DIR=$(realpath ${CWD})
 
 echo "- run the ssm-bootstrap-observability bootstrap script in ${REAL_DIR}"
-sudo -iu ssm-user GIT_HTTPS_CREDS=${GIT_HTTPS_CREDS} OBS_BRANCH=${OBS_BRANCH:-${BRANCH}} AUTODEPLOY=${AUTODEPLOY:-"false"} ${REAL_DIR}/ssm-bootstrap-observability.sh
+sudo -iu ssm-user GITHUB_HTTPS_CREDS=${GITHUB_HTTPS_CREDS} OBS_BRANCH=${OBS_BRANCH:-${BRANCH}} AUTODEPLOY=${AUTODEPLOY:-"false"} ${REAL_DIR}/ssm-bootstrap-observability.sh
 
 if [[ $? != 0 ]]; then
   >&2 echo "Bootstrap initialization failed."
