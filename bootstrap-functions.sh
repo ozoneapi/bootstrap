@@ -62,21 +62,21 @@ function setSsmParameter() {
     --overwrite
 }
 
-function yumInstall() {
+function dnfInstall() {
   local PACKAGE_NAMES=${*}
 
 
   # try 3 times to install the packages
   for i in {1..3}; do
-    # sleep while yum lock is active
-    while [[ -f /var/run/yum.pid ]]; do
-      echo "`date` - yum lock file exists. Waiting for yum to finish"
+    # sleep while dnf lock is active
+    while [[ -f /var/run/dnf.pid ]]; do
+      echo "`date` - dnf lock file exists. Waiting for dnf to finish"
       sleep 5
     done
 
-    yum install -y ${PACKAGE_NAMES}
+    dnf install -y ${PACKAGE_NAMES}
     if [[ $? == 0 ]]; then
-      echo "`date` - yum install succeeded"
+      echo "`date` - dnf install succeeded"
       break
     fi
 

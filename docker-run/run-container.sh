@@ -9,11 +9,11 @@ fi
 # install docker
 echo "Installing and starting docker - start"
 
-# give yum a chance
-echo "Sleeping for 2 minutes to give yum a chance"
+# give dnf a chance
+echo "Sleeping for 2 minutes to give dnf a chance"
 sleep 120
 
-yumInstall docker
+dnfInstall docker
 if [[ $? != 0 ]]; then
   >&2 echo "Error while installing docker."
   exit 1
